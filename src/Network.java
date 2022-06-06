@@ -3,14 +3,48 @@ import java.util.Arrays;
 public class Network {
   private Matrix[] weights;
   private Matrix[] biases;
+  private ActivationFunction[] activations;
   public Network(int[] layers){
     weights = new Matrix[layers.length-1];
     biases = new Matrix[layers.length-1];
+    activations = new ActivationFunction[layers.length-1];
     for(int i = 1; i < layers.length; i++){
       weights[i-1] = new Matrix(layers[i], layers[i-1]);
       biases[i-1] = new Matrix(layers[i], 1);
       weights[i-1].randomize(0, 1);
       biases[i-1].randomize(0, 1);
+    }
+    ActivationFunction f = new NoFunction();
+    for(int i = 1; i < layers.length; i++){
+      activations[i-1] = f;
+    }
+  }
+  public Network(int[] layers, ActivationFunction f){
+    weights = new Matrix[layers.length-1];
+    biases = new Matrix[layers.length-1];
+    activations = new ActivationFunction[layers.length-1];
+    for(int i = 1; i < layers.length; i++){
+      weights[i-1] = new Matrix(layers[i], layers[i-1]);
+      biases[i-1] = new Matrix(layers[i], 1);
+      weights[i-1].randomize(0, 1);
+      biases[i-1].randomize(0, 1);
+    }
+    for(int i = 1; i < layers.length; i++){
+      activations[i-1] = f;
+    }
+  }
+  public Network(int[] layers, ActivationFunction[] fs){
+    weights = new Matrix[layers.length-1];
+    biases = new Matrix[layers.length-1];
+    activations = new ActivationFunction[layers.length-1];
+    for(int i = 1; i < layers.length; i++){
+      weights[i-1] = new Matrix(layers[i], layers[i-1]);
+      biases[i-1] = new Matrix(layers[i], 1);
+      weights[i-1].randomize(0, 1);
+      biases[i-1].randomize(0, 1);
+    }
+    for(int i = 1; i < layers.length; i++){
+      activations[i-1] = fs[i-1];
     }
   }
   public Matrix goThroughLayer(Matrix input, int layer){
@@ -20,7 +54,7 @@ public class Network {
     if(input.cols != 1 || input.rows != weights[layer].cols){
       throw new IllegalArgumentException("input is not the right size");
     }
-    return weights[layer].multiply(input).add(biases[layer]);
+    return activations[layer].compressMatrix(weights[layer].multiply(input).add(biases[layer]));
   }
   public Matrix getResult(Matrix input){
     Matrix res = new Matrix(input);
