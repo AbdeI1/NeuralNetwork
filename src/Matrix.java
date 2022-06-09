@@ -77,7 +77,7 @@ public class Matrix {
     }
     return res;
   }
-  public void randomize(int a, int b){
+  public void randomize(double a, double b){
     for(int i = 0; i < rows; i++){
       for(int j = 0; j < cols; j++){
         mat[i][j] = a + Math.random()*(b - a);

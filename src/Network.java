@@ -1,37 +1,14 @@
-import java.util.Arrays;
+import java.util.*;
 
 public class Network {
   private Matrix[] weights;
   private Matrix[] biases;
   private ActivationFunction[] activations;
   public Network(int[] layers){
-    weights = new Matrix[layers.length-1];
-    biases = new Matrix[layers.length-1];
-    activations = new ActivationFunction[layers.length-1];
-    for(int i = 1; i < layers.length; i++){
-      weights[i-1] = new Matrix(layers[i], layers[i-1]);
-      biases[i-1] = new Matrix(layers[i], 1);
-      weights[i-1].randomize(0, 1);
-      biases[i-1].randomize(0, 1);
-    }
-    ActivationFunction f = new NoFunction();
-    for(int i = 1; i < layers.length; i++){
-      activations[i-1] = f;
-    }
+    this(layers, new NoFunction());
   }
   public Network(int[] layers, ActivationFunction f){
-    weights = new Matrix[layers.length-1];
-    biases = new Matrix[layers.length-1];
-    activations = new ActivationFunction[layers.length-1];
-    for(int i = 1; i < layers.length; i++){
-      weights[i-1] = new Matrix(layers[i], layers[i-1]);
-      biases[i-1] = new Matrix(layers[i], 1);
-      weights[i-1].randomize(0, 1);
-      biases[i-1].randomize(0, 1);
-    }
-    for(int i = 1; i < layers.length; i++){
-      activations[i-1] = f;
-    }
+    this(layers, Arrays.stream(new ActivationFunction[layers.length-1]).map(o -> f).toArray(ActivationFunction[]::new));
   }
   public Network(int[] layers, ActivationFunction[] fs){
     weights = new Matrix[layers.length-1];
@@ -40,8 +17,8 @@ public class Network {
     for(int i = 1; i < layers.length; i++){
       weights[i-1] = new Matrix(layers[i], layers[i-1]);
       biases[i-1] = new Matrix(layers[i], 1);
-      weights[i-1].randomize(0, 1);
-      biases[i-1].randomize(0, 1);
+      weights[i-1].randomize(0, 0.25);
+      biases[i-1].randomize(0, 0.25);
     }
     for(int i = 1; i < layers.length; i++){
       activations[i-1] = fs[i-1];
@@ -62,6 +39,22 @@ public class Network {
       res = goThroughLayer(res, i);
     }
     return res;
+  }
+  public double getCost(Matrix a, Matrix b) {
+    if(a.rows != b.rows || b.cols != a.cols) {
+      throw new IllegalArgumentException("inputs are not the same size");
+    }
+    double res = 0;
+    for(int i = 0; i < a.rows; i++){
+      for(int j = 0; j < b.cols; j++){
+        res += (a.mat[i][j] - b.mat[i][j])*(a.mat[i][j] - b.mat[i][j]);
+      }
+    }
+    return res;
+  }
+  public void train(Matrix input, Matrix expected) {
+    Matrix output = getResult(input);
+
   }
   @Override
   public String toString() {
