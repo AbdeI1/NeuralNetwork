@@ -24,9 +24,7 @@ public class Matrix {
     cols = a[0].length;
     mat = new double[rows][cols];
     for(int i = 0; i < rows; i++){
-      for(int j = 0; j < cols; j++){
-        mat[i][j] = a[i][j];
-      }
+      System.arraycopy(a[i], 0, mat[i], 0, cols);
     }
   }
   public Matrix(Matrix m){
@@ -34,9 +32,7 @@ public class Matrix {
     cols = m.cols;
     mat = new double[m.rows][m.cols];
     for(int i = 0; i < rows; i++){
-      for(int j = 0; j < cols; j++){
-        mat[i][j] = m.mat[i][j];
-      }
+      System.arraycopy(m.mat[i], 0, mat[i], 0, cols);
     }
   }
   public Matrix add(Matrix m){
