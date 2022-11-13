@@ -56,7 +56,9 @@ public class Network {
     Matrix output = getResult(input);
     double cost = getCost(output, expected);
     Matrix[] dW = new Matrix[weights.length];
+    for(int i = 0; i < dW.length; i++) dW[i] = new Matrix(weights[i].rows, weights[i].cols);
     Matrix[] dB = new Matrix[biases.length];
+    for(int i = 0; i < dB.length; i++) dB[i] = new Matrix(biases[i].rows, biases[i].cols);
   }
   @Override
   public String toString() {
