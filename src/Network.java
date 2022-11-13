@@ -54,7 +54,9 @@ public class Network {
   }
   public void train(Matrix input, Matrix expected) {
     Matrix output = getResult(input);
-
+    double cost = getCost(output, expected);
+    Matrix[] dW = new Matrix[weights.length];
+    Matrix[] dB = new Matrix[biases.length];
   }
   @Override
   public String toString() {
