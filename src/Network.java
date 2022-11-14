@@ -1,9 +1,11 @@
 import java.util.*;
 
 public class Network {
-  private Matrix[] weights;
-  private Matrix[] biases;
-  private ActivationFunction[] activations;
+  private final Matrix[] weights;
+  private final Matrix[] biases;
+  private final ActivationFunction[] activations;
+  private final CostFunction costFunction;
+  private final double eta;
   public Network(int[] layers){
     this(layers, new NoFunction());
   }
@@ -20,9 +22,9 @@ public class Network {
       weights[i-1].randomize(0, 0.25);
       biases[i-1].randomize(0, 0.25);
     }
-    for(int i = 1; i < layers.length; i++){
-      activations[i-1] = fs[i-1];
-    }
+    System.arraycopy(fs, 0, activations, 0, layers.length - 1);
+    costFunction = new SquareDifference();
+    eta = 0.1;
   }
   public Matrix goThroughLayer(Matrix input, int layer){
     if(layer < 0 || layer >= weights.length){
@@ -40,21 +42,23 @@ public class Network {
     }
     return res;
   }
-  public double getCost(Matrix a, Matrix b) {
-    if(a.rows != b.rows || b.cols != a.cols) {
-      throw new IllegalArgumentException("inputs are not the same size");
-    }
-    double res = 0;
-    for(int i = 0; i < a.rows; i++){
-      for(int j = 0; j < b.cols; j++){
-        res += (a.mat[i][j] - b.mat[i][j])*(a.mat[i][j] - b.mat[i][j]);
+  public void train(Matrix input, Matrix expected) {
+    Matrix[] outputs = new Matrix[weights.length+1];
+    outputs[0] = new Matrix(input);
+    for(int i = 1; i <= weights.length; i++) outputs[i] = goThroughLayer(outputs[i-1], i-1);
+    double cost = costFunction.getCostMatrix(outputs[weights.length], expected);
+    Matrix[] dW = new Matrix[weights.length];
+    for(int i = 0; i < dW.length; i++) dW[i] = new Matrix(weights[i].rows, weights[i].cols);
+    Matrix[] dB = new Matrix[biases.length];
+    for(int i = 0; i < dB.length; i++) dB[i] = new Matrix(biases[i].rows, biases[i].cols);
+    for(int l = dW.length; l >= 0; l--) {
+      Matrix W = weights[l];
+      for(int i = 0; i < W.rows; i++) {
+        for(int j = 0; j < W.cols; j++) {
+          // double grad = costFunction.getDerivative(output.mat[j][1], expected.mat[j][1])*activations[l].getDerivative(output.mat[j][1])*W.mat[i][j];
+        }
       }
     }
-    return res;
-  }
-  public void train(Matrix input, Matrix expected) {
-    Matrix output = getResult(input);
-    double cost = getCost(output, expected);
   }
   @Override
   public String toString() {

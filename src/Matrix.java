@@ -24,9 +24,7 @@ public class Matrix {
     cols = a[0].length;
     mat = new double[rows][cols];
     for(int i = 0; i < rows; i++){
-      for(int j = 0; j < cols; j++){
-        mat[i][j] = a[i][j];
-      }
+      System.arraycopy(a[i], 0, mat[i], 0, cols);
     }
   }
   public Matrix(Matrix m){
@@ -34,9 +32,7 @@ public class Matrix {
     cols = m.cols;
     mat = new double[m.rows][m.cols];
     for(int i = 0; i < rows; i++){
-      for(int j = 0; j < cols; j++){
-        mat[i][j] = m.mat[i][j];
-      }
+      System.arraycopy(m.mat[i], 0, mat[i], 0, cols);
     }
   }
   public Matrix add(Matrix m){
@@ -89,12 +85,12 @@ public class Matrix {
     if (this == o) return true;
     if (o == null || getClass() != o.getClass()) return false;
     Matrix matrix = (Matrix) o;
-    return rows == matrix.rows && cols == matrix.cols && Arrays.equals(mat, matrix.mat);
+    return rows == matrix.rows && cols == matrix.cols && Arrays.deepEquals(mat, matrix.mat);
   }
   @Override
   public int hashCode() {
     int result = Objects.hash(rows, cols);
-    result = 31 * result + Arrays.hashCode(mat);
+    result = 31 * result + Arrays.deepHashCode(mat);
     return result;
   }
   @Override
@@ -133,9 +129,7 @@ public class Matrix {
   public Matrix copy() {
     Matrix res = new Matrix(rows, cols);
     for(int i = 0; i < rows; i++){
-      for(int j = 0; j < cols; j++){
-        res.mat[i][j] = mat[i][j];
-      }
+      if (cols >= 0) System.arraycopy(mat[i], 0, res.mat[i], 0, cols);
     }
     return res;
   }
