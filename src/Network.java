@@ -54,7 +54,7 @@ public class Network {
   }
   public void train(Matrix input, Matrix expected) {
     Matrix output = getResult(input);
-
+    double cost = getCost(output, expected);
   }
   @Override
   public String toString() {
