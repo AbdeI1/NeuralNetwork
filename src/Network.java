@@ -60,6 +60,9 @@ public class Network {
       }
     }
   }
+  private void backprop(int l, int i, int j, Matrix[] outputs, double grad) {
+    if(l < 0) return;
+  }
   @Override
   public String toString() {
     return "Network{" +
