@@ -5,7 +5,7 @@ public class Network {
   private final Matrix[] biases;
   private final ActivationFunction[] activations;
   private final CostFunction costFunction;
-  private final double eta;
+  public double eta;
   public Network(int[] layers){
     this(layers, new NoFunction());
   }
@@ -46,22 +46,32 @@ public class Network {
     Matrix[] outputs = new Matrix[weights.length+1];
     outputs[0] = new Matrix(input);
     for(int i = 1; i <= weights.length; i++) outputs[i] = goThroughLayer(outputs[i-1], i-1);
-    double cost = costFunction.getCostMatrix(outputs[weights.length], expected);
     Matrix[] dW = new Matrix[weights.length];
     for(int i = 0; i < dW.length; i++) dW[i] = new Matrix(weights[i].rows, weights[i].cols);
     Matrix[] dB = new Matrix[biases.length];
     for(int i = 0; i < dB.length; i++) dB[i] = new Matrix(biases[i].rows, biases[i].cols);
-    for(int l = dW.length; l >= 0; l--) {
-      Matrix W = weights[l];
-      for(int i = 0; i < W.rows; i++) {
-        for(int j = 0; j < W.cols; j++) {
-          // double grad = costFunction.getDerivative(output.mat[j][1], expected.mat[j][1])*activations[l].getDerivative(output.mat[j][1])*W.mat[i][j];
+    Matrix[] dA = new Matrix[weights.length+1];
+    for(int i = 0; i < dA.length; i++) dA[i] = new Matrix(outputs[i].rows, 1);
+    for(int i = 0; i < dA[dA.length-1].rows; i++) dA[dA.length-1].mat[i][0] = costFunction.getDerivative(outputs[dA.length-1].mat[i][0], expected.mat[i][0]);
+    for(int l = dA.length-2; l >= 0; l--) {
+      for(int k = 0; k < dA[l].rows; k++) {
+        dA[l].mat[k][0] = 0;
+        for(int j = 0; j < dA[l+1].rows; j++) {
+          double D = dA[l+1].mat[j][0]*activations[l].getDerivative(outputs[l+1].mat[j][0]);
+          dA[l].mat[k][0] += D*weights[l].mat[j][k];
+          dW[l].mat[j][k] = D*outputs[l].mat[k][0];
+          dB[l].mat[j][0] = D;
         }
       }
     }
-  }
-  private void backprop(int l, int i, int j, Matrix[] outputs, double grad) {
-    if(l < 0) return;
+    for(int l = 0; l < weights.length; l++) {
+      for(int i = 0; i < weights[l].rows; i++) {
+        biases[l].mat[i][0] -= eta*dB[l].mat[i][0];
+        for(int j = 0; j < weights[l].cols; j++) {
+          weights[l].mat[i][j] -= eta*dW[l].mat[i][j];
+        }
+      }
+    }
   }
   @Override
   public String toString() {
