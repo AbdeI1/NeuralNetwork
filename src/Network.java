@@ -54,13 +54,12 @@ public class Network {
     for(int i = 0; i < dA.length; i++) dA[i] = new Matrix(outputs[i].rows, 1);
     for(int i = 0; i < dA[dA.length-1].rows; i++) dA[dA.length-1].mat[i][0] = costFunction.getDerivative(outputs[dA.length-1].mat[i][0], expected.mat[i][0]);
     for(int l = dA.length-2; l >= 0; l--) {
-      for(int k = 0; k < dA[l].rows; k++) {
-        dA[l].mat[k][0] = 0;
-        for(int j = 0; j < dA[l+1].rows; j++) {
-          double D = dA[l+1].mat[j][0]*activations[l].getDerivative(outputs[l+1].mat[j][0]);
+      for(int j = 0; j < dA[l+1].rows; j++) {
+        double D = dA[l+1].mat[j][0]*activations[l].getDerivative(outputs[l+1].mat[j][0]);
+        dB[l].mat[j][0] = D;
+        for(int k = 0; k < dA[l].rows; k++) {
           dA[l].mat[k][0] += D*weights[l].mat[j][k];
           dW[l].mat[j][k] = D*outputs[l].mat[k][0];
-          dB[l].mat[j][0] = D;
         }
       }
     }

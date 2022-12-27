@@ -5,7 +5,7 @@ public class Driver {
     Network n = new Network(new int[]{5, 16, 16, 10, 5}, new SigmoidFunction());
     n.eta = 0.1;
     Matrix input = new Matrix(new double[][]{{0},{0},{0},{0},{0}});
-    Matrix expected = new Matrix(new double[][]{{0.25},{1},{0.5},{1},{0.5}});
+    Matrix expected = new Matrix(new double[][]{{0.25},{0.8},{0.5},{0.6},{0.75}});
     for(int i = 0; i < 100; i++) {
       System.out.println(n.getResult(input));
       n.train(input, expected);
