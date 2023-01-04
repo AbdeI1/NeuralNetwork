@@ -1,4 +1,5 @@
 import java.io.*;
+import java.util.Arrays;
 
 public class Driver {
   public static void main(String[] args) throws IOException {
@@ -8,34 +9,28 @@ public class Driver {
     int n = s.readInt();
     int R = s.readInt();
     int C = s.readInt();
-    Matrix[] trainingData = new Matrix[n];
-    for(int i = 0; i < n; i++) {
-      trainingData[i] = new Matrix(R, C);
-      for(int r = 0; r < R; r++) for(int c = 0; c < C; c++) trainingData[i].mat[r][c] = s.readUnsignedByte();
-    }
+    byte[][] trainingData = new byte[n][R*C];
+    for(int i = 0; i < n; i++) s.readFully(trainingData[i]);
     s.close();
 
     s = new DataInputStream(new BufferedInputStream(new FileInputStream("data/train-labels.idx1-ubyte")));
     s.readInt(); s.readInt();
-    int[] trainingLabels = new int[n];
-    for(int i = 0; i < n; i++) trainingLabels[i] = s.readUnsignedByte();
+    byte[] trainingLabels = new byte[n];
+    s.readFully(trainingLabels);
     s.close();
 
     s = new DataInputStream(new BufferedInputStream(new FileInputStream("data/t10k-images.idx3-ubyte")));
     s.readInt();
     n = s.readInt();
     s.readInt(); s.readInt();
-    Matrix[] testData = new Matrix[n];
-    for(int i = 0; i < n; i++) {
-      testData[i] = new Matrix(R, C);
-      for(int r = 0; r < R; r++) for(int c = 0; c < C; c++) testData[i].mat[r][c] = s.readUnsignedByte();
-    }
+    byte[][] testData = new byte[n][R*C];
+    for(int i = 0; i < n; i++) s.readFully(testData[i]);
     s.close();
 
     s = new DataInputStream(new BufferedInputStream(new FileInputStream("data/t10k-labels.idx1-ubyte")));
     s.readInt(); s.readInt();
-    int[] testLabels = new int[n];
-    for(int i = 0; i < n; i++) testLabels[i] = s.readUnsignedByte();
+    byte[] testLabels = new byte[n];
+    s.readFully(testLabels);
     s.close();
 
     Network N = new Network(new int[]{R*C, 100, 10}, new SigmoidFunction());
@@ -56,9 +51,9 @@ public class Driver {
     System.out.printf("accuracy: %.2f%%\n", acc);
   }
 
-  static Matrix transformImage(Matrix m) {
-    Matrix r = new Matrix(m.rows*m.cols, 1);
-    for(int i = 0; i < m.rows; i++) for(int j = 0; j < m.cols; j++) r.mat[i*m.cols + j][0] = m.mat[i][j]/255;
+  static Matrix transformImage(byte[] a) {
+    Matrix r = new Matrix(a.length, 1);
+    for(int i = 0; i < a.length; i++) r.mat[i][0] = (double)((int)a[i] & 0xff)/255;
     return r;
   }
 
