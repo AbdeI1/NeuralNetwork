@@ -10,9 +10,12 @@ public class Network {
     this(layers, new NoFunction());
   }
   public Network(int[] layers, ActivationFunction f){
-    this(layers, Arrays.stream(new ActivationFunction[layers.length-1]).map(o -> f).toArray(ActivationFunction[]::new));
+    this(layers, f, new SquareDifference());
   }
-  public Network(int[] layers, ActivationFunction[] fs){
+  public Network(int[] layers, ActivationFunction f, CostFunction cf) {
+    this(layers, Arrays.stream(new ActivationFunction[layers.length-1]).map(o -> f).toArray(ActivationFunction[]::new), cf, 0.1);
+  }
+  public Network(int[] layers, ActivationFunction[] fs, CostFunction cf, double e){
     weights = new Matrix[layers.length-1];
     biases = new Matrix[layers.length-1];
     activations = new ActivationFunction[layers.length-1];
@@ -23,8 +26,8 @@ public class Network {
       biases[i-1].randomize(0, 0.25);
     }
     System.arraycopy(fs, 0, activations, 0, layers.length - 1);
-    costFunction = new SquareDifference();
-    eta = 0.1;
+    costFunction = cf;
+    eta = e;
   }
   public Matrix goThroughLayer(Matrix input, int layer){
     if(layer < 0 || layer >= weights.length){

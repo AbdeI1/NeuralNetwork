@@ -1,4 +1,4 @@
-public class SquareDifference implements CostFunction{
+public class SquareDifference implements  CostFunction {
   public double getCost(double a, double b) {
     return (a-b)*(a-b);
   }
