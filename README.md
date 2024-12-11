@@ -1,6 +1,6 @@
 # Neural Network
 
-This repo contains code for a working Neuralt Network implementation in Java. The network can be constructed as 
+This repo contains code for a working Neural Network implementation in Java. The network can be constructed as 
 follows:
 
 ```Java
